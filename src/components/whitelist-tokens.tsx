@@ -1,19 +1,15 @@
 import { useEffect, useState } from "react";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { Connection, PublicKey, SystemProgram, clusterApiUrl } from "@solana/web3.js";
-import { IDL, Dapp } from "../anchor/idl";
+import { IDL } from "../anchor/idl";
 import { AnchorProvider, Program } from "@coral-xyz/anchor";
 import { TOKEN_2022_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID, getAssociatedTokenAddress, getAssociatedTokenAddressSync, TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import * as anchor from "@coral-xyz/anchor";
 
-const programId = new PublicKey("954YsJ5M2WsS4ZSMNkV8iuU4cpZMm32pk7bbCewBHt38"); 
-const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
-
-
 export default function WhiteListTokens() {
   const { connection } = useConnection();
   const [whitelistTokenDatas, setWhitelistTokenDatas] = useState<any>([]);
-  const { publicKey, sendTransaction, wallet } = useWallet();
+  const { publicKey, wallet } = useWallet();
   const [selectedToken, setSelectedToken] = useState<string>("");
   const [mintAmount, setMintAmount] = useState<number>(1);
 
@@ -23,7 +19,6 @@ export default function WhiteListTokens() {
     }
     /*Create the provider and return it to the caller*/
     /*network set to localnet for testing purposes*/
-  
     const provider = new AnchorProvider(
       connection, wallet.adapter, {"preflightCommitment": "processed"},
     );
