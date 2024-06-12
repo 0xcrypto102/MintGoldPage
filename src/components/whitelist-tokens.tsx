@@ -26,7 +26,7 @@ export default function WhiteListTokens() {
     /*Create the provider and return it to the caller*/
     /*network set to localnet for testing purposes*/
     const provider = new AnchorProvider(
-      connection, wallet.adapter, {"preflightCommitment": "processed"},
+      connection, wallet.adapter as unknown as anchor.Wallet, {"preflightCommitment": "processed"},
     );
     return provider;
   }
@@ -56,7 +56,7 @@ export default function WhiteListTokens() {
         return
       }
       const program = new Program(IDL, provider);
-      const tokenData = whitelistTokenDatas[selectedToken];
+      const tokenData = whitelistTokenDatas[parseInt(selectedToken)];
 
       const mintTokenAddress = new PublicKey("ALxY6ofrJBx1RtCbhgoe8nLWWo6L9Y2ow6BkXxH8LXaj");
 
