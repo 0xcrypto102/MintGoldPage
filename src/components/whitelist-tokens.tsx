@@ -1,14 +1,20 @@
 import { useEffect, useState } from "react";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import { Connection, PublicKey, SystemProgram, clusterApiUrl } from "@solana/web3.js";
+import { PublicKey, SystemProgram } from "@solana/web3.js";
 import { IDL } from "../anchor/idl";
 import { AnchorProvider, Program } from "@coral-xyz/anchor";
 import { TOKEN_2022_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID, getAssociatedTokenAddress, getAssociatedTokenAddressSync, TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import * as anchor from "@coral-xyz/anchor";
 
+type WhitelistTokenData = {
+  mint: string;
+  amount: number;
+  type: boolean;
+};
+
 export default function WhiteListTokens() {
   const { connection } = useConnection();
-  const [whitelistTokenDatas, setWhitelistTokenDatas] = useState<any>([]);
+  const [whitelistTokenDatas, setWhitelistTokenDatas] = useState<WhitelistTokenData[]>([]);
   const { publicKey, wallet } = useWallet();
   const [selectedToken, setSelectedToken] = useState<string>("");
   const [mintAmount, setMintAmount] = useState<number>(1);
@@ -54,17 +60,19 @@ export default function WhiteListTokens() {
 
       const mintTokenAddress = new PublicKey("ALxY6ofrJBx1RtCbhgoe8nLWWo6L9Y2ow6BkXxH8LXaj");
 
-      const [authority, _1] = await PublicKey.findProgramAddress(
+      const [authority, authorityBump] = await PublicKey.findProgramAddress(
         [
           Buffer.from("MINT-AUTHORITY")
         ],
         program.programId
       );
+      console.log(authorityBump);
 
-      const [globalState,_2] = PublicKey.findProgramAddressSync(
+      const [globalState,globalStateBump] = PublicKey.findProgramAddressSync(
         [Buffer.from("GLOBAL-STATE-SEED")],
         program.programId
       );
+      console.log(globalStateBump);
 
       const mintTokenAccount = associatedAddress({
         mint: mintTokenAddress,
@@ -99,8 +107,10 @@ export default function WhiteListTokens() {
         ],
         program.programId
       );
+      console.log(whitelistTokenBump);
 
-      const [extraMetasAccount, _3] = PublicKey.findProgramAddressSync(
+
+      const [extraMetasAccount, extraMetasAccountBump] = PublicKey.findProgramAddressSync(
         [
             Buffer.from("extra-account-metas"),
             mintTokenAddress.toBuffer(),
@@ -108,6 +118,7 @@ export default function WhiteListTokens() {
         program.programId
       );
   
+      console.log(extraMetasAccountBump);
   
       const mintGoldAmount = mintAmount * 1000000000;
 
@@ -170,13 +181,14 @@ export default function WhiteListTokens() {
         }
         const program = new Program(IDL, provider);
 
-        const [globalStatePDA,_1] = PublicKey.findProgramAddressSync(
+        const [globalStatePDA,globalStatePDABump] = PublicKey.findProgramAddressSync(
             [Buffer.from("GLOBAL-STATE-SEED")],
             program.programId
         );
+        console.log(globalStatePDABump);
 
         const data = await program.account.globalState.fetch(globalStatePDA);
-        let temp = [];
+        const temp: WhitelistTokenData[] = [];
         for(let i = 0; i<data.whitelistTokens.length;i++) {
             const whitelistToken = data.whitelistTokens[i];
             const tokenData = await program.account.whitelistToken.fetch(whitelistToken);
@@ -195,7 +207,7 @@ export default function WhiteListTokens() {
 
   const renderTokens = () => {
     if (whitelistTokenDatas.length > 0) {
-        return whitelistTokenDatas.map((data: any, index: number) => (
+        return whitelistTokenDatas.map((data: WhitelistTokenData, index: number) => (
             <option key={index} value={index}>
                 {data.mint} - {data.type ? "SPL TOKEN" : "TOKEN-2022"}
             </option>
@@ -222,7 +234,7 @@ export default function WhiteListTokens() {
             <button onClick={handleMint}>Mint</button>
         </div>
         <div>
-            {whitelistTokenDatas.map((data: any, index: number) => (
+            {whitelistTokenDatas.map((data: WhitelistTokenData, index: number) => (
                 <div key={index}>
                     <div>Mint Address: {data.mint}</div>
                     <div>Amount: {data.amount}</div>
