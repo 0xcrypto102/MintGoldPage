@@ -9,6 +9,7 @@ import * as anchor from "@coral-xyz/anchor";
 type WhitelistTokenData = {
   mint: string;
   amount: number;
+  rate: number,
   type: boolean;
 };
 
@@ -18,6 +19,12 @@ export default function WhiteListTokens() {
   const { publicKey, wallet } = useWallet();
   const [selectedToken, setSelectedToken] = useState<string>("");
   const [mintAmount, setMintAmount] = useState<number>(1);
+
+  const [tokenAddress, setTokenAddress] = useState<string>("");
+  const [amount, setAmount] = useState<number>(0);
+  const [div, setDiv] = useState<number>(1);
+  const [tokenType, setTokenType] = useState<boolean>(true);
+  const [editable, setEditAble] = useState<boolean>(false);
 
   const getProvider = () => {
     if (!wallet) {
@@ -58,7 +65,7 @@ export default function WhiteListTokens() {
       const program = new Program(IDL, provider);
       const tokenData = whitelistTokenDatas[parseInt(selectedToken)];
 
-      const mintTokenAddress = new PublicKey("ALxY6ofrJBx1RtCbhgoe8nLWWo6L9Y2ow6BkXxH8LXaj");
+      const mintTokenAddress = new PublicKey("AyyRUGAprJPqNUXLeCm1NhBBV35GkxpmQbzuRcCXDMHE");
 
       const [authority, authorityBump] = await PublicKey.findProgramAddress(
         [
@@ -168,8 +175,185 @@ export default function WhiteListTokens() {
     } catch(e) {
         console.log(e);
     }
-   }
+  }
+
+  const addWhiteListToken = async() => {
+    // Implement the logic to add a token to the whitelist
+    try {
+      const provider = getProvider();
+      if (!provider) {
+        alert("Provider not found");
+        return;
+      }
+
+      if(!publicKey) {
+        return
+      }
+
+      if(amount<=0) {
+        return
+      }
   
+      if(div<=0) {
+        return
+      }
+
+    
+
+      const mint = new PublicKey(tokenAddress);
+
+      const program = new Program(IDL, provider);
+      const [globalState,globalStateBump] = PublicKey.findProgramAddressSync(
+        [Buffer.from("GLOBAL-STATE-SEED")],
+        program.programId
+      );
+      console.log(globalStateBump);
+      const [whitelistToken, whitelistTokenBump] = await anchor.web3.PublicKey.findProgramAddress(
+        [
+          Buffer.from("WHITELIST-STATE-SEED"),
+          mint.toBuffer()
+        ],
+        program.programId
+      );
+      console.log(whitelistTokenBump);
+  
+      const tx = await program.rpc.addWhitelistToken(
+        mint,
+        new anchor.BN(amount),
+        new anchor.BN(div),
+        tokenType, 
+        {
+          accounts : {
+            authority: publicKey,
+            globalState,
+            whitelistToken,
+            systemProgram: SystemProgram.programId
+          }
+        }
+      );
+      console.log("tx->", tx);
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const editWhiteListToken = async() => {
+    try {
+      const provider = getProvider();
+      if (!provider) {
+        alert("Provider not found");
+        return;
+      }
+
+      if(!publicKey) {
+        return
+      }
+
+      if(amount<=0) {
+        return
+      }
+  
+      if(div<=0) {
+        return
+      }
+      const mint = new PublicKey(tokenAddress);
+
+      const program = new Program(IDL, provider);
+      const [globalState,globalStateBump] = PublicKey.findProgramAddressSync(
+        [Buffer.from("GLOBAL-STATE-SEED")],
+        program.programId
+      );
+      console.log(globalStateBump);
+      const [whitelistToken, whitelistTokenBump] = await anchor.web3.PublicKey.findProgramAddress(
+        [
+          Buffer.from("WHITELIST-STATE-SEED"),
+          mint.toBuffer()
+        ],
+        program.programId
+      );
+      console.log(whitelistTokenBump);
+      
+      const tx = await program.rpc.editWhitelistToken(
+        mint,
+        new anchor.BN(amount),
+        new anchor.BN(div),
+        tokenType, 
+        {
+          accounts : {
+            authority: publicKey,
+            globalState,
+            whitelistToken,
+            systemProgram: SystemProgram.programId
+          }
+        }
+      );
+      console.log("tx->", tx);
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const editToken = async(index: number) => {
+    const token = whitelistTokenDatas[index];
+    setTokenAddress(token.mint);
+    setAmount(Number(token.amount) * Number(token.rate));
+    setDiv(token.rate);
+    setTokenType(token.type);
+    setEditAble(true);
+    // Additional logic to handle the edit action
+  
+  }
+
+  const deleteToken = async(index: number) => {
+    // Implement the logic to add a token to the whitelist
+    try {
+      const provider = getProvider();
+      if (!provider) {
+        alert("Provider not found");
+        return;
+      }
+
+      if(!publicKey) {
+        return
+      }
+      
+      const tokenData = whitelistTokenDatas[index];
+
+      console.log(tokenData);
+      const mint = new PublicKey(tokenData.mint);
+
+      const program = new Program(IDL, provider);
+      const [globalState,globalStateBump] = PublicKey.findProgramAddressSync(
+        [Buffer.from("GLOBAL-STATE-SEED")],
+        program.programId
+      );
+      console.log(globalStateBump);
+      const [whitelistToken, whitelistTokenBump] = await anchor.web3.PublicKey.findProgramAddress(
+        [
+          Buffer.from("WHITELIST-STATE-SEED"),
+          mint.toBuffer()
+        ],
+        program.programId
+      );
+      console.log(whitelistTokenBump);
+  
+      const tx = await program.rpc.deleteWhitelistToken(
+        mint,
+        {
+          accounts : {
+            authority: publicKey,
+            globalState,
+            whitelistToken,
+            systemProgram: SystemProgram.programId
+          }
+        }
+      );
+      console.log("tx->", tx);
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   useEffect(() => {
     const getData = async() => {
@@ -195,6 +379,7 @@ export default function WhiteListTokens() {
             temp.push({
                 mint: tokenData.mint.toString(),
                 amount: Number(tokenData.amount / tokenData.div),
+                rate: Number(tokenData.div),
                 type: tokenData.tokenType
             })
         }
@@ -234,13 +419,28 @@ export default function WhiteListTokens() {
             <button onClick={handleMint}>Mint</button>
         </div>
         <div>
-            {whitelistTokenDatas.map((data: WhitelistTokenData, index: number) => (
-                <div key={index}>
-                    <div>Mint Address: {data.mint}</div>
-                    <div>Amount: {data.amount}</div>
-                    <div>Type: {data.type ? "SPL TOKEN" : "TOKEN-2022"}</div>
-                </div>
-            ))}
+          <p></p>
+          Mint: <input type="text" placeholder="Token Address" value={tokenAddress} onChange={(e) => setTokenAddress(e.target.value)} />
+          Amount:<input type="number" placeholder="Amount" value={amount} onChange={(e) => setAmount(Number(e.target.value))}/>
+          Rate:<input type="number" placeholder="div" value={div} onChange={(e) => setDiv(Number(e.target.value))}/>
+          Type: <select onChange={(e) => setTokenType(e.target.value === "true")} value={tokenType.toString()} >
+            <option value="true">SPL Token</option>
+            <option value="false">Token-2022</option>
+          </select>
+          <button onClick={() => {!editable?addWhiteListToken():editWhiteListToken()}}>{!editable? "Add":"Update"}</button>
+        </div>
+        <div>
+          {whitelistTokenDatas.map((data: any, index: number) => (
+            <div key={index}>
+              <p></p>
+              <div>Mint Address: {data.mint}</div>
+              <div>Amount: {data.amount}</div>
+              <div>Type: {data.type ? "SPL TOKEN" : "TOKEN-2022"}</div>
+              <button onClick={() => editToken(index)}>Edit</button>
+              <button onClick={() => deleteToken(index)}>Delete</button>
+              <p></p>
+            </div>
+          ))}
         </div>
     </>
   )
