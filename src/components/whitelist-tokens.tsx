@@ -410,7 +410,7 @@ export default function WhiteListTokens() {
                 <option value="" disabled>Select a token</option>
                 {renderTokens()}
             </select>
-            <input 
+            Burn Amount: <input 
                 type="number" 
                 value={mintAmount} 
                 onChange={(e) => setMintAmount(Number(e.target.value))} 
