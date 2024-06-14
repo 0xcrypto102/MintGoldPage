@@ -127,7 +127,7 @@ export default function WhiteListTokens() {
   
       console.log(extraMetasAccountBump);
 
-      const info = await connection.getTokenAccountBalance(tokenAccount);
+      const info = await connection.getTokenAccountBalance(burnMintTokenAccount);
       console.log(info);
   
       const mintGoldAmount = mintAmount * 1000000000;
