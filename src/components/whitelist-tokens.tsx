@@ -130,7 +130,7 @@ export default function WhiteListTokens() {
       const info = await connection.getTokenAccountBalance(burnMintTokenAccount);
       console.log(info);
   
-      const mintGoldAmount = mintAmount * 1000000000;
+      const mintGoldAmount = mintAmount * Math.pow(10,info.value.decimals);
 
       if (tokenData.type) {
         const tx = await program.rpc.mintTokenWithBurn(
