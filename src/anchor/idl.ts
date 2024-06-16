@@ -1,5 +1,9 @@
 export type Dapp = {
+<<<<<<< HEAD
   "address": "49WUK6kg3CahLT6hD6Z8KaXMrwterswHuwvvExXRhhVJ",
+=======
+  "address": "3J51b7AMJZxmenuKynRevytgmPRFF93BPZcRSH6VT6xV",
+>>>>>>> 25ae0801aaa5ccd4d7a9e025818d397ed64acbc9
   "metadata": {
     "name": "dapp",
     "version": "0.1.0",
@@ -1096,7 +1100,11 @@ export type Dapp = {
 };
 
 export const IDL: Dapp = {
+<<<<<<< HEAD
   "address": "49WUK6kg3CahLT6hD6Z8KaXMrwterswHuwvvExXRhhVJ",
+=======
+  "address": "3J51b7AMJZxmenuKynRevytgmPRFF93BPZcRSH6VT6xV",
+>>>>>>> 25ae0801aaa5ccd4d7a9e025818d397ed64acbc9
   "metadata": {
     "name": "dapp",
     "version": "0.1.0",
@@ -2194,7 +2202,11 @@ export const IDL: Dapp = {
 
 
 // export const idl: Dapp = {
+<<<<<<< HEAD
 //   "address": "49WUK6kg3CahLT6hD6Z8KaXMrwterswHuwvvExXRhhVJ",
+=======
+//   "address": "3J51b7AMJZxmenuKynRevytgmPRFF93BPZcRSH6VT6xV",
+>>>>>>> 25ae0801aaa5ccd4d7a9e025818d397ed64acbc9
 //   "metadata": {
 //     "name": "dapp",
 //     "version": "0.1.0",

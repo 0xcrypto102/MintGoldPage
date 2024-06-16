@@ -65,7 +65,7 @@ export default function WhiteListTokens() {
       const program = new Program(IDL, provider);
       const tokenData = whitelistTokenDatas[parseInt(selectedToken)];
 
-      const mintTokenAddress = new PublicKey("AyyRUGAprJPqNUXLeCm1NhBBV35GkxpmQbzuRcCXDMHE");
+      const mintTokenAddress = new PublicKey("37AymJicLsrdRBXZSxooU3ogQJeCM7z9UCPMq3k37QXr");
 
       const [authority, authorityBump] = await PublicKey.findProgramAddress(
         [
