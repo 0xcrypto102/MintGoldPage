@@ -1,5 +1,5 @@
 export type Dapp = {
-  "address": "E7GAterNGHfNpn4p9kEgWeNvhKMYbkTsgukBUNFEv52p",
+  "address": "49WUK6kg3CahLT6hD6Z8KaXMrwterswHuwvvExXRhhVJ",
   "metadata": {
     "name": "dapp",
     "version": "0.1.0",
@@ -371,6 +371,36 @@ export type Dapp = {
           "name": "mint",
           "writable": true,
           "signer": true
+        },
+        {
+          "name": "globalState",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  71,
+                  76,
+                  79,
+                  66,
+                  65,
+                  76,
+                  45,
+                  83,
+                  84,
+                  65,
+                  84,
+                  69,
+                  45,
+                  83,
+                  69,
+                  69,
+                  68
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "systemProgram",
@@ -1066,7 +1096,7 @@ export type Dapp = {
 };
 
 export const IDL: Dapp = {
-  "address": "E7GAterNGHfNpn4p9kEgWeNvhKMYbkTsgukBUNFEv52p",
+  "address": "49WUK6kg3CahLT6hD6Z8KaXMrwterswHuwvvExXRhhVJ",
   "metadata": {
     "name": "dapp",
     "version": "0.1.0",
@@ -1438,6 +1468,36 @@ export const IDL: Dapp = {
           "name": "mint",
           "writable": true,
           "signer": true
+        },
+        {
+          "name": "globalState",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  71,
+                  76,
+                  79,
+                  66,
+                  65,
+                  76,
+                  45,
+                  83,
+                  84,
+                  65,
+                  84,
+                  69,
+                  45,
+                  83,
+                  69,
+                  69,
+                  68
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "systemProgram",
@@ -2134,7 +2194,7 @@ export const IDL: Dapp = {
 
 
 // export const idl: Dapp = {
-//   "address": "E7GAterNGHfNpn4p9kEgWeNvhKMYbkTsgukBUNFEv52p",
+//   "address": "49WUK6kg3CahLT6hD6Z8KaXMrwterswHuwvvExXRhhVJ",
 //   "metadata": {
 //     "name": "dapp",
 //     "version": "0.1.0",
