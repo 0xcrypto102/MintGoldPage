@@ -433,7 +433,7 @@ export default function WhiteListTokens() {
           <button onClick={() => {!editable?addWhiteListToken():editWhiteListToken()}}>{!editable? "Add":"Update"}</button>
         </div>
         <div>
-          {whitelistTokenDatas.map((data: any, index: number) => (
+          {whitelistTokenDatas.map((data: WhitelistTokenData, index: number) => (
             <div key={index}>
               <p></p>
               <div>Mint Address: {data.mint}</div>
