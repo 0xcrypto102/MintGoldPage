@@ -431,6 +431,7 @@ export default function WhiteListTokens() {
             <option value="false">Token-2022</option>
           </select>
           <button onClick={() => {!editable?addWhiteListToken():editWhiteListToken()}}>{!editable? "Add":"Update"}</button>
+          <h4>Burn Amount: Amount / Rate (eg: 0.5 = 1 /2, 5 = 5 / 1)</h4>
         </div>
         <div>
           {whitelistTokenDatas.map((data: WhitelistTokenData, index: number) => (
