@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import { PublicKey, SystemProgram } from "@solana/web3.js";
+import { Connection, PublicKey, SystemProgram } from "@solana/web3.js";
 import { IDL } from "../anchor/idl";
 import { AnchorProvider, Program } from "@coral-xyz/anchor";
 import { TOKEN_2022_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID, getAssociatedTokenAddress, getAssociatedTokenAddressSync, TOKEN_PROGRAM_ID } from '@solana/spl-token';
@@ -19,12 +19,15 @@ export default function WhiteListTokens() {
   const { publicKey, wallet } = useWallet();
   const [selectedToken, setSelectedToken] = useState<string>("");
   const [mintAmount, setMintAmount] = useState<number>(1);
+  const [tx, setTx] = useState<string>("");
+  const [error, setError] = useState<string>("");
 
   const [tokenAddress, setTokenAddress] = useState<string>("");
-  const [amount, setAmount] = useState<number>(0);
   const [div, setDiv] = useState<number>(1);
   const [tokenType, setTokenType] = useState<boolean>(true);
   const [editable, setEditAble] = useState<boolean>(false);
+
+  const owner = "3dG6y22sC7rLRQSQX3qiAnZa9jkeJtdAEBC8ip1KzukH";
 
   const getProvider = () => {
     if (!wallet) {
@@ -62,10 +65,12 @@ export default function WhiteListTokens() {
       if(!publicKey) {
         return
       }
+
+     
       const program = new Program(IDL, provider);
       const tokenData = whitelistTokenDatas[parseInt(selectedToken)];
 
-      const mintTokenAddress = new PublicKey("37AymJicLsrdRBXZSxooU3ogQJeCM7z9UCPMq3k37QXr");
+      const mintTokenAddress = new PublicKey("3XscxwbtfbhmKq6AJzpUiz9LbEwCE6zzCsHrr69jQs6L");
 
       const [authority, authorityBump] = await PublicKey.findProgramAddress(
         [
@@ -86,8 +91,13 @@ export default function WhiteListTokens() {
         owner: publicKey,
       });
 
+      if(tokenData == undefined){
+        setError("Please select the burn mint token");
+        return
+      }
+      
       const burnMint = new PublicKey(tokenData.mint);
-
+    
       let burnMintTokenAccount = null;
 
       if (tokenData.type) {
@@ -105,8 +115,7 @@ export default function WhiteListTokens() {
         );
       }
 
-     
-
+  
       const [whitelistToken, whitelistTokenBump] = await PublicKey.findProgramAddress(
         [
           Buffer.from("WHITELIST-STATE-SEED"),
@@ -129,8 +138,23 @@ export default function WhiteListTokens() {
 
       const info = await connection.getTokenAccountBalance(burnMintTokenAccount);
       console.log(info);
+      
+      if (info.value.uiAmount == null) {
+        setError("No balance found");
+        return
+      }
   
       const mintGoldAmount = mintAmount * Math.pow(10,info.value.decimals);
+
+      if(mintGoldAmount == 0) {
+        setError("Burn Amount should be bigger than 0");
+        return
+      }
+
+      if(Number(info.value.uiAmountString) < mintAmount) {
+        setError(`Burn Token Amount is not enough, your current balance is ${Number(info.value.uiAmountString)}`);
+        return
+      }
 
       if (tokenData.type) {
         const tx = await program.rpc.mintTokenWithBurn(
@@ -152,7 +176,7 @@ export default function WhiteListTokens() {
               },
             }
         );
-        console.log(tx);
+        setTx(`https://solscan.io/tx/${tx}?cluster=devnet`);
       } else {
         const tx = await program.rpc.mintTokenWithBurn2022(
             new anchor.BN(mintGoldAmount), {
@@ -173,7 +197,7 @@ export default function WhiteListTokens() {
               },
             }
         );
-        console.log(tx);
+        setTx(`https://solscan.io/tx/${tx}?cluster=devnet`);
       }
     } catch(e) {
         console.log(e);
@@ -192,16 +216,11 @@ export default function WhiteListTokens() {
       if(!publicKey) {
         return
       }
-
-      if(amount<=0) {
-        return
-      }
   
       if(div<=0) {
         return
       }
 
-    
 
       const mint = new PublicKey(tokenAddress);
 
@@ -222,8 +241,8 @@ export default function WhiteListTokens() {
   
       const tx = await program.rpc.addWhitelistToken(
         mint,
-        new anchor.BN(amount),
-        new anchor.BN(div),
+        new anchor.BN(div * 10),
+        new anchor.BN(10),
         tokenType, 
         {
           accounts : {
@@ -234,7 +253,7 @@ export default function WhiteListTokens() {
           }
         }
       );
-      console.log("tx->", tx);
+      setTx(`https://solscan.io/tx/${tx}?cluster=devnet`);
     } catch (error) {
       console.log(error)
     }
@@ -249,10 +268,6 @@ export default function WhiteListTokens() {
       }
 
       if(!publicKey) {
-        return
-      }
-
-      if(amount<=0) {
         return
       }
   
@@ -275,11 +290,12 @@ export default function WhiteListTokens() {
         program.programId
       );
       console.log(whitelistTokenBump);
+      console.log("div->", div);
       
       const tx = await program.rpc.editWhitelistToken(
         mint,
-        new anchor.BN(amount),
-        new anchor.BN(div),
+        new anchor.BN(div * 10),
+        new anchor.BN(10),
         tokenType, 
         {
           accounts : {
@@ -290,8 +306,7 @@ export default function WhiteListTokens() {
           }
         }
       );
-      console.log("tx->", tx);
-
+      setTx(`https://solscan.io/tx/${tx}?cluster=devnet`);
     } catch (error) {
       console.log(error);
     }
@@ -300,8 +315,7 @@ export default function WhiteListTokens() {
   const editToken = async(index: number) => {
     const token = whitelistTokenDatas[index];
     setTokenAddress(token.mint);
-    setAmount(Number(token.amount) * Number(token.rate));
-    setDiv(token.rate);
+    setDiv(token.amount / token.rate);
     setTokenType(token.type);
     setEditAble(true);
     // Additional logic to handle the edit action
@@ -352,7 +366,7 @@ export default function WhiteListTokens() {
           }
         }
       );
-      console.log("tx->", tx);
+      setTx(`https://solscan.io/tx/${tx}?cluster=devnet`);
     } catch (error) {
       console.log(error)
     }
@@ -381,7 +395,7 @@ export default function WhiteListTokens() {
             const tokenData = await program.account.whitelistToken.fetch(whitelistToken);
             temp.push({
                 mint: tokenData.mint.toString(),
-                amount: Number(tokenData.amount / tokenData.div),
+                amount: Number(tokenData.amount),
                 rate: Number(tokenData.div),
                 type: tokenData.tokenType
             })
@@ -404,8 +418,6 @@ export default function WhiteListTokens() {
     return <option>No tokens found</option>;
   }
 
-
-
   return (
     <>
          <div>
@@ -423,25 +435,33 @@ export default function WhiteListTokens() {
         </div>
         <div>
           <p></p>
+          {owner == publicKey?.toString() && <div>
           Mint: <input type="text" placeholder="Token Address" value={tokenAddress} onChange={(e) => setTokenAddress(e.target.value)} />
-          Amount:<input type="number" placeholder="Amount" value={amount} onChange={(e) => setAmount(Number(e.target.value))}/>
-          Rate:<input type="number" placeholder="div" value={div} onChange={(e) => setDiv(Number(e.target.value))}/>
+          Rate:<input type="number" placeholder="div" value={div} min={0} onChange={(e) => setDiv(Number(e.target.value))} step={0.1}/>
           Type: <select onChange={(e) => setTokenType(e.target.value === "true")} value={tokenType.toString()} >
             <option value="true">SPL Token</option>
             <option value="false">Token-2022</option>
           </select>
           <button onClick={() => {!editable?addWhiteListToken():editWhiteListToken()}}>{!editable? "Add":"Update"}</button>
-          <h4>Burn Amount: Amount / Rate (eg: 0.5 = 1 /2, 5 = 5 / 1)</h4>
+          </div>}
         </div>
+        {tx !="" && <div>Confirm Transaction: <a href={tx} target="_blink">{tx}</a></div>}
+        {error !="" && <div>Error Message: {error}</div>}
         <div>
           {whitelistTokenDatas.map((data: WhitelistTokenData, index: number) => (
             <div key={index}>
               <p></p>
               <div>Mint Address: {data.mint}</div>
-              <div>Amount: {data.amount}</div>
+              <div>Rate: {data.amount / data.rate}</div>
               <div>Type: {data.type ? "SPL TOKEN" : "TOKEN-2022"}</div>
-              <button onClick={() => editToken(index)}>Edit</button>
-              <button onClick={() => deleteToken(index)}>Delete</button>
+              {
+                owner == publicKey?.toString() 
+                && 
+                <div>
+                  <button onClick={() => editToken(index)}>Edit</button>
+                  <button onClick={() => deleteToken(index)}>Delete</button>
+                </div>
+              }
               <p></p>
             </div>
           ))}

@@ -1,5 +1,5 @@
 export type Dapp = {
-  "address": "49WUK6kg3CahLT6hD6Z8KaXMrwterswHuwvvExXRhhVJ",
+  "address": "GPAEfd7BT9xxSnwbkWQJsZ73v7jLHHg7av5ZJE8tomvu",
   "metadata": {
     "name": "dapp",
     "version": "0.1.0",
@@ -924,18 +924,38 @@ export type Dapp = {
   "errors": [
     {
       "code": 6000,
-      "name": "notInitialized",
+      "name": "NotInitialized",
       "msg": "The contract was not initialized yet"
     },
     {
       "code": 6001,
-      "name": "notAuthorized",
+      "name": "NotAuthorized",
       "msg": "The current signer is not authorized as owner"
     },
     {
       "code": 6002,
-      "name": "wrongTokenAddress",
+      "name": "ZeroAmount",
+      "msg": "The mint amount should be bigger than 0"
+    },
+    {
+      "code": 6003,
+      "name": "AlreadyExisit",
+      "msg": "The whitelist token is already exisited"
+    },
+    {
+      "code": 6004,
+      "name": "WrongBurnTokenAddress",
       "msg": "The token address is wrong, please provide the correct token address"
+    },
+    {
+      "code": 6005,
+      "name": "WrongBurnTokenTypeForSplToken",
+      "msg": "The token's type is not correct, it should be SPL-TOKEN"
+    },
+    {
+      "code": 6006,
+      "name": "WrongBurnTokenTypeForToken2022",
+      "msg": "The token's type is not correct, it should be SPL-TOKEN"
     }
   ],
   "types": [
@@ -1096,7 +1116,7 @@ export type Dapp = {
 };
 
 export const IDL: Dapp = {
-  "address": "49WUK6kg3CahLT6hD6Z8KaXMrwterswHuwvvExXRhhVJ",
+  "address": "GPAEfd7BT9xxSnwbkWQJsZ73v7jLHHg7av5ZJE8tomvu",
   "metadata": {
     "name": "dapp",
     "version": "0.1.0",
@@ -2021,18 +2041,38 @@ export const IDL: Dapp = {
   "errors": [
     {
       "code": 6000,
-      "name": "notInitialized",
+      "name": "NotInitialized",
       "msg": "The contract was not initialized yet"
     },
     {
       "code": 6001,
-      "name": "notAuthorized",
+      "name": "NotAuthorized",
       "msg": "The current signer is not authorized as owner"
     },
     {
       "code": 6002,
-      "name": "wrongTokenAddress",
+      "name": "ZeroAmount",
+      "msg": "The mint amount should be bigger than 0"
+    },
+    {
+      "code": 6003,
+      "name": "AlreadyExisit",
+      "msg": "The whitelist token is already exisited"
+    },
+    {
+      "code": 6004,
+      "name": "WrongBurnTokenAddress",
       "msg": "The token address is wrong, please provide the correct token address"
+    },
+    {
+      "code": 6005,
+      "name": "WrongBurnTokenTypeForSplToken",
+      "msg": "The token's type is not correct, it should be SPL-TOKEN"
+    },
+    {
+      "code": 6006,
+      "name": "WrongBurnTokenTypeForToken2022",
+      "msg": "The token's type is not correct, it should be SPL-TOKEN"
     }
   ],
   "types": [
