@@ -3,20 +3,27 @@ import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey, SystemProgram } from "@solana/web3.js";
 import { IDL } from "../anchor/idl";
 import { AnchorProvider, Program } from "@coral-xyz/anchor";
-import { TOKEN_2022_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID, getAssociatedTokenAddress, getAssociatedTokenAddressSync, TOKEN_PROGRAM_ID } from '@solana/spl-token';
+import { 
+  TOKEN_PROGRAM_ID,
+  ASSOCIATED_TOKEN_PROGRAM_ID, 
+} from '@solana/spl-token';
 import * as anchor from "@coral-xyz/anchor";
+import { getTokenAssets } from "../core/common";
+import { TOKEN_2022_PROGRAM_ID, getAssociatedTokenAddress, getAssociatedTokenAddressSync } from "@solana/spl-token";
 
 type WhitelistTokenData = {
+  name: string | undefined,
   mint: string;
   amount: number;
   rate: number,
   type: boolean;
 };
 
+
 export default function WhiteListTokens() {
   const { connection } = useConnection();
   const [whitelistTokenDatas, setWhitelistTokenDatas] = useState<WhitelistTokenData[]>([]);
-  const { publicKey, wallet } = useWallet();
+  const userWallet = useWallet();
   const [selectedToken, setSelectedToken] = useState<string>("");
   const [mintAmount, setMintAmount] = useState<number>(1);
   const [tx, setTx] = useState<string>("");
@@ -28,15 +35,16 @@ export default function WhiteListTokens() {
   const [editable, setEditAble] = useState<boolean>(false);
 
   const owner = "3dG6y22sC7rLRQSQX3qiAnZa9jkeJtdAEBC8ip1KzukH";
+ 
 
   const getProvider = () => {
-    if (!wallet) {
+    if (!userWallet.wallet) {
         return null;
     }
     /*Create the provider and return it to the caller*/
     /*network set to localnet for testing purposes*/
     const provider = new AnchorProvider(
-      connection, wallet.adapter as unknown as anchor.Wallet, {"preflightCommitment": "processed"},
+      connection, userWallet.wallet.adapter as unknown as anchor.Wallet, {"preflightCommitment": "processed"},
     );
     return provider;
   }
@@ -62,7 +70,7 @@ export default function WhiteListTokens() {
         return;
       }
 
-      if(!publicKey) {
+      if(!userWallet.publicKey) {
         return
       }
 
@@ -88,7 +96,7 @@ export default function WhiteListTokens() {
 
       const mintTokenAccount = associatedAddress({
         mint: mintTokenAddress,
-        owner: publicKey,
+        owner: userWallet.publicKey,
       });
 
       if(tokenData == undefined){
@@ -97,24 +105,26 @@ export default function WhiteListTokens() {
       }
       
       const burnMint = new PublicKey(tokenData.mint);
-    
       let burnMintTokenAccount = null;
-
+    
       if (tokenData.type) {
         burnMintTokenAccount = await getAssociatedTokenAddress(
             burnMint,
-            publicKey
+            userWallet.publicKey
         );
+        console.log("burnMintTokenAccount->", burnMintTokenAccount.toString());
+        console.log("burn token->",burnMint.toString());
       } else {
         burnMintTokenAccount = getAssociatedTokenAddressSync(
             burnMint,
-            publicKey,
+            userWallet.publicKey,
             false,
             TOKEN_2022_PROGRAM_ID,
             ASSOCIATED_TOKEN_PROGRAM_ID
         );
+        console.log("burnMintTokenAccount->", burnMintTokenAccount.toString());
+        console.log("burn token->",burnMint.toString());
       }
-
   
       const [whitelistToken, whitelistTokenBump] = await PublicKey.findProgramAddress(
         [
@@ -133,17 +143,22 @@ export default function WhiteListTokens() {
         ],
         program.programId
       );
-  
       console.log(extraMetasAccountBump);
+
+      const tokenAccountInfo = await provider.connection.getAccountInfo(burnMintTokenAccount);
+
+      if(!tokenAccountInfo){
+        setError("The burn token account is not existed.");
+        return
+      }
 
       const info = await connection.getTokenAccountBalance(burnMintTokenAccount);
       console.log(info);
-      
       if (info.value.uiAmount == null) {
         setError("No balance found");
         return
       }
-  
+
       const mintGoldAmount = mintAmount * Math.pow(10,info.value.decimals);
 
       if(mintGoldAmount == 0) {
@@ -160,7 +175,7 @@ export default function WhiteListTokens() {
         const tx = await program.rpc.mintTokenWithBurn(
             new anchor.BN(mintGoldAmount), {
               accounts: {
-                payer: publicKey,
+                payer: userWallet.publicKey,
                 authority,
                 mint: mintTokenAddress,
                 globalState,
@@ -181,7 +196,7 @@ export default function WhiteListTokens() {
         const tx = await program.rpc.mintTokenWithBurn2022(
             new anchor.BN(mintGoldAmount), {
               accounts: {
-                payer: publicKey,
+                payer: userWallet.publicKey,
                 authority,
                 mint: mintTokenAddress,
                 globalState,
@@ -213,7 +228,7 @@ export default function WhiteListTokens() {
         return;
       }
 
-      if(!publicKey) {
+      if(!userWallet.publicKey) {
         return
       }
   
@@ -246,7 +261,7 @@ export default function WhiteListTokens() {
         tokenType, 
         {
           accounts : {
-            authority: publicKey,
+            authority: userWallet.publicKey,
             globalState,
             whitelistToken,
             systemProgram: SystemProgram.programId
@@ -267,7 +282,7 @@ export default function WhiteListTokens() {
         return;
       }
 
-      if(!publicKey) {
+      if(!userWallet.publicKey) {
         return
       }
   
@@ -299,7 +314,7 @@ export default function WhiteListTokens() {
         tokenType, 
         {
           accounts : {
-            authority: publicKey,
+            authority: userWallet.publicKey,
             globalState,
             whitelistToken,
             systemProgram: SystemProgram.programId
@@ -331,7 +346,7 @@ export default function WhiteListTokens() {
         return;
       }
 
-      if(!publicKey) {
+      if(!userWallet.publicKey) {
         return
       }
       
@@ -359,7 +374,7 @@ export default function WhiteListTokens() {
         mint,
         {
           accounts : {
-            authority: publicKey,
+            authority: userWallet.publicKey,
             globalState,
             whitelistToken,
             systemProgram: SystemProgram.programId
@@ -381,7 +396,6 @@ export default function WhiteListTokens() {
             return
         }
         const program = new Program(IDL, provider);
-
         const [globalStatePDA,globalStatePDABump] = PublicKey.findProgramAddressSync(
             [Buffer.from("GLOBAL-STATE-SEED")],
             program.programId
@@ -390,10 +404,16 @@ export default function WhiteListTokens() {
 
         const data = await program.account.globalState.fetch(globalStatePDA);
         const temp: WhitelistTokenData[] = [];
+ 
+
         for(let i = 0; i<data.whitelistTokens.length;i++) {
             const whitelistToken = data.whitelistTokens[i];
             const tokenData = await program.account.whitelistToken.fetch(whitelistToken);
+
+            const mintPubkey = tokenData.mint.toString();
+            const tokenAssets = await getTokenAssets(mintPubkey);
             temp.push({
+                name: tokenAssets?.name,
                 mint: tokenData.mint.toString(),
                 amount: Number(tokenData.amount),
                 rate: Number(tokenData.div),
@@ -411,7 +431,7 @@ export default function WhiteListTokens() {
     if (whitelistTokenDatas.length > 0) {
         return whitelistTokenDatas.map((data: WhitelistTokenData, index: number) => (
             <option key={index} value={index}>
-                {data.mint} - {data.type ? "SPL TOKEN" : "TOKEN-2022"}
+                {data.name? data.name: data.mint} - {data.type ? "SPL TOKEN" : "TOKEN-2022"}
             </option>
         ));
     }
@@ -435,7 +455,7 @@ export default function WhiteListTokens() {
         </div>
         <div>
           <p></p>
-          {owner == publicKey?.toString() && <div>
+          {owner == userWallet.publicKey?.toString() && <div>
           Mint: <input type="text" placeholder="Token Address" value={tokenAddress} onChange={(e) => setTokenAddress(e.target.value)} />
           Rate:<input type="number" placeholder="div" value={div} min={0} onChange={(e) => setDiv(Number(e.target.value))} step={0.1}/>
           Type: <select onChange={(e) => setTokenType(e.target.value === "true")} value={tokenType.toString()} >
@@ -446,16 +466,16 @@ export default function WhiteListTokens() {
           </div>}
         </div>
         {tx !="" && <div>Confirm Transaction: <a href={tx} target="_blink">{tx}</a></div>}
-        {error !="" && <div>Error Message: {error}</div>}
+        {error !="" && <div style={{"color":"red"}}>Error Message: {error}</div>}
         <div>
           {whitelistTokenDatas.map((data: WhitelistTokenData, index: number) => (
             <div key={index}>
               <p></p>
-              <div>Mint Address: {data.mint}</div>
+              <div>Mint Address: {data.name?data.name:data.mint}</div>
               <div>Rate: {data.amount / data.rate}</div>
               <div>Type: {data.type ? "SPL TOKEN" : "TOKEN-2022"}</div>
               {
-                owner == publicKey?.toString() 
+                owner == userWallet.publicKey?.toString() 
                 && 
                 <div>
                   <button onClick={() => editToken(index)}>Edit</button>
@@ -469,3 +489,4 @@ export default function WhiteListTokens() {
     </>
   )
 }
+
