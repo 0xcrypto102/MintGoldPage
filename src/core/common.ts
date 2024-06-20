@@ -1,6 +1,6 @@
 export const getTokenAssets = async (token: string) => {
     try {
-        const response = await fetch('https://devnet.helius-rpc.com/?api-key=3df5f1e8-ed02-460e-98db-c7fa20688dad', {
+        const response = await fetch('https://devnet.helius-rpc.com/?api-key={}', {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json"
