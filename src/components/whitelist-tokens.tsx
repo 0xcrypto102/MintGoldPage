@@ -411,7 +411,7 @@ export default function WhiteListTokens() {
             const tokenData = await program.account.whitelistToken.fetch(whitelistToken);
 
             const mintPubkey = tokenData.mint.toString();
-            const tokenAssets = await getTokenAssets(mintPubkey);
+            const tokenAssets = await getTokenAssets(mintPubkey, tokenData.tokenType);
             temp.push({
                 name: tokenAssets?.name,
                 mint: tokenData.mint.toString(),
