@@ -1,5 +1,5 @@
 export type Dapp = {
-  "address": "GPAEfd7BT9xxSnwbkWQJsZ73v7jLHHg7av5ZJE8tomvu",
+  "address": "DB18QukdregAie8tw2c21SmAuZBEkKKXF1WHSuviqpHr",
   "metadata": {
     "name": "dapp",
     "version": "0.1.0",
@@ -1116,7 +1116,7 @@ export type Dapp = {
 };
 
 export const IDL: Dapp = {
-  "address": "GPAEfd7BT9xxSnwbkWQJsZ73v7jLHHg7av5ZJE8tomvu",
+  "address": "DB18QukdregAie8tw2c21SmAuZBEkKKXF1WHSuviqpHr",
   "metadata": {
     "name": "dapp",
     "version": "0.1.0",

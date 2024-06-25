@@ -78,7 +78,7 @@ export default function WhiteListTokens() {
       const program = new Program(IDL, provider);
       const tokenData = whitelistTokenDatas[parseInt(selectedToken)];
 
-      const mintTokenAddress = new PublicKey("3XscxwbtfbhmKq6AJzpUiz9LbEwCE6zzCsHrr69jQs6L");
+      const mintTokenAddress = new PublicKey("3PaMh6KjDfhnibUnn5FKkRLxj4usX1ZceFN4nqmsiXjM");
 
       const [authority, authorityBump] = await PublicKey.findProgramAddress(
         [
@@ -159,9 +159,9 @@ export default function WhiteListTokens() {
         return
       }
 
-      const mintGoldAmount = mintAmount * Math.pow(10,info.value.decimals);
+      const mintGoldAmount = (mintAmount * Math.pow(10,info.value.decimals)).toString();
 
-      if(mintGoldAmount == 0) {
+      if(mintGoldAmount == "0") {
         setError("Burn Amount should be bigger than 0");
         return
       }
@@ -333,8 +333,6 @@ export default function WhiteListTokens() {
     setDiv(token.amount / token.rate);
     setTokenType(token.type);
     setEditAble(true);
-    // Additional logic to handle the edit action
-  
   }
 
   const deleteToken = async(index: number) => {

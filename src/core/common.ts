@@ -4,6 +4,7 @@ import { Connection, PublicKey } from "@solana/web3.js";
 export const getTokenAssets = async (token: string, type: boolean) => {
     try {
         const rpc = 'https://api.devnet.solana.com';
+        // const rpc = 'https://devnet.helius-rpc.com/?api-key=3df5f1e8-ed02-460e-98db-c7fa20688dad';
         const connection = new Connection(rpc);
         if(type ){
             const response = await fetch(rpc, {
