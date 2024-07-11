@@ -36,7 +36,6 @@ export default function WhiteListTokens() {
 
   const owner = "3dG6y22sC7rLRQSQX3qiAnZa9jkeJtdAEBC8ip1KzukH";
  
-
   const getProvider = () => {
     if (!userWallet.wallet) {
         return null;
@@ -78,7 +77,7 @@ export default function WhiteListTokens() {
       const program = new Program(IDL, provider);
       const tokenData = whitelistTokenDatas[parseInt(selectedToken)];
 
-      const mintTokenAddress = new PublicKey("3PaMh6KjDfhnibUnn5FKkRLxj4usX1ZceFN4nqmsiXjM");
+      const mintTokenAddress = new PublicKey("Fd4baGGBH1zjiLizGjyHAsjbmyZykB1RmagKKWAehUnb");
 
       const [authority, authorityBump] = await PublicKey.findProgramAddress(
         [

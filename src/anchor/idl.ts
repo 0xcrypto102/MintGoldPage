@@ -1,5 +1,5 @@
 export type Dapp = {
-  "address": "DB18QukdregAie8tw2c21SmAuZBEkKKXF1WHSuviqpHr",
+  "address": "CRv6vxx2ZAxdUmi1aDD5xSbE2Qor3yyetxPYJK9V7rNJ",
   "metadata": {
     "name": "dapp",
     "version": "0.1.0",
@@ -411,16 +411,7 @@ export type Dapp = {
           "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
         }
       ],
-      "args": [
-        {
-          "name": "args",
-          "type": {
-            "defined": {
-              "name": "createMintAccountArgs"
-            }
-          }
-        }
-      ]
+      "args": []
     },
     {
       "name": "initialize",
@@ -1116,7 +1107,7 @@ export type Dapp = {
 };
 
 export const IDL: Dapp = {
-  "address": "DB18QukdregAie8tw2c21SmAuZBEkKKXF1WHSuviqpHr",
+  "address": "CRv6vxx2ZAxdUmi1aDD5xSbE2Qor3yyetxPYJK9V7rNJ",
   "metadata": {
     "name": "dapp",
     "version": "0.1.0",
@@ -1528,16 +1519,7 @@ export const IDL: Dapp = {
           "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
         }
       ],
-      "args": [
-        {
-          "name": "args",
-          "type": {
-            "defined": {
-              "name": "createMintAccountArgs"
-            }
-          }
-        }
-      ]
+      "args": []
     },
     {
       "name": "initialize",
